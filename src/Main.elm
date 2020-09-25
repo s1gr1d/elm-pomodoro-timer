@@ -5,6 +5,7 @@ import Css exposing (..)
 import Html.Styled exposing (Html, button, div, h1, input, li, section, text, ul)
 import Html.Styled.Attributes exposing (css, name, placeholder, value)
 import Html.Styled.Events exposing (onClick, onInput)
+import Time
 
 
 
@@ -25,6 +26,20 @@ main =
 -- MODEL
 
 
+type PomodoroState
+    = Work
+    | Break
+    | LongBreak
+
+
+type alias Timer =
+    { state : PomodoroState
+    , completedPomodoros : Int
+    , completedSets : Int
+    , milliSecLeft : Int
+    }
+
+
 type alias Task =
     { id : Int
     , name : String
@@ -33,7 +48,8 @@ type alias Task =
 
 
 type alias Model =
-    { inputText : String
+    { timer : Timer
+    , inputText : String
     , tasks : List Task
     }
 
@@ -47,9 +63,18 @@ defaultTasks =
     ]
 
 
+defaultPomodoroState : Timer
+defaultPomodoroState =
+    { state = Work
+    , completedPomodoros = 0
+    , completedSets = 0
+    , milliSecLeft = 1500000
+    }
+
+
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( { inputText = "", tasks = defaultTasks }, Cmd.none )
+    ( { timer = defaultPomodoroState, inputText = "", tasks = defaultTasks }, Cmd.none )
 
 
 
@@ -57,7 +82,8 @@ init _ =
 
 
 type Msg
-    = AddTask
+    = Tick Time.Posix
+    | AddTask
     | RemoveTask Int
     | ToggleTask Int
     | ChangeInput String
@@ -66,6 +92,9 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
+        Tick _ ->
+            ( { model | timer = tick model.timer }, Cmd.none )
+
         AddTask ->
             ( { model
                 | tasks = addTask model.inputText model.tasks
@@ -82,6 +111,11 @@ update message model =
 
         ChangeInput input ->
             ( { model | inputText = input }, Cmd.none )
+
+
+tick : Timer -> Timer
+tick timer =
+    { timer | milliSecLeft = timer.milliSecLeft - 1000 }
 
 
 
@@ -117,11 +151,28 @@ toggleAtIndex indexToToggle list =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Time.every 1000 Tick
 
 
 
 -- VIEW
+
+
+timerView : Int -> Html Msg
+timerView milliSeconds =
+    let
+        minute =
+            String.fromInt (Time.toMinute Time.utc (Time.millisToPosix milliSeconds))
+
+        second =
+            String.fromInt (Time.toSecond Time.utc (Time.millisToPosix milliSeconds))
+    in
+    div
+        [ css
+            [ fontFamilies [ "Lucida Sans Unicode", "sans-serif" ]
+            ]
+        ]
+        [ text (minute ++ ":" ++ second) ]
 
 
 taskListView : List Task -> Html Msg
@@ -144,10 +195,7 @@ taskView index task =
             [ fontFamilies [ "Lucida Sans Unicode", "sans-serif" ]
             ]
         ]
-        [ text task.name
-
-        {--, button [ onClick (EditGratitudeElement index) ] [ text "edit" ] --}
-        ]
+        [ text task.name ]
 
 
 view : Model -> Browser.Document Msg
@@ -163,7 +211,8 @@ view model =
                     , fontFamilies [ "Palatino Linotype", "Georgia", "serif" ]
                     ]
                 ]
-                [ div []
+                [ timerView model.timer.milliSecLeft
+                , div []
                     [ h1
                         [ css
                             [ fontFamilies [ "Courier New", "monospace" ]
@@ -195,5 +244,5 @@ view model =
                 ]
     in
     { body = [ Html.Styled.toUnstyled body ]
-    , title = "sigrid title"
+    , title = "Pomodoro Timer"
     }
