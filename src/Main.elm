@@ -169,7 +169,10 @@ timerView milliSeconds =
     in
     div
         [ css
-            [ fontFamilies [ "Lucida Sans Unicode", "sans-serif" ]
+            [ displayFlex
+            , justifyContent center
+            , fontFamilies
+                [ "Lucida Sans Unicode", "sans-serif" ]
             ]
         ]
         [ text (minute ++ ":" ++ second) ]
@@ -183,6 +186,7 @@ taskListView list =
             , justifyContent center
             , alignItems center
             , flexDirection column
+            , paddingLeft (px 0)
             ]
         ]
         (List.indexedMap (\idx taskName -> taskView idx taskName) list)
@@ -211,14 +215,14 @@ view model =
                     , fontFamilies [ "Palatino Linotype", "Georgia", "serif" ]
                     ]
                 ]
-                [ timerView model.timer.milliSecLeft
-                , div []
+                [ div []
                     [ h1
                         [ css
                             [ fontFamilies [ "Courier New", "monospace" ]
                             ]
                         ]
                         [ text "Pomodoro Timer" ]
+                    , timerView model.timer.milliSecLeft
                     , div
                         [ css
                             [ displayFlex
