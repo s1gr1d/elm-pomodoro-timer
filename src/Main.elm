@@ -244,5 +244,5 @@ view model =
                 ]
     in
     { body = [ Html.Styled.toUnstyled body ]
-    , title = "Pomodoro Timer"
+    , title = "🍅 Pomodoro Timer"
     }
