@@ -162,10 +162,26 @@ timerView : Int -> Html Msg
 timerView milliSeconds =
     let
         minute =
-            String.fromInt (Time.toMinute Time.utc (Time.millisToPosix milliSeconds))
+            let
+                minutesInt =
+                    Time.toMinute Time.utc (Time.millisToPosix milliSeconds)
+            in
+            if minutesInt < 10 then
+                "0" ++ String.fromInt minutesInt
 
-        second =
-            String.fromInt (Time.toSecond Time.utc (Time.millisToPosix milliSeconds))
+            else
+                String.fromInt minutesInt
+
+        seconds =
+            let
+                secondsInt =
+                    Time.toSecond Time.utc (Time.millisToPosix milliSeconds)
+            in
+            if secondsInt < 10 then
+                "0" ++ String.fromInt secondsInt
+
+            else
+                String.fromInt secondsInt
     in
     div
         [ css
@@ -175,7 +191,7 @@ timerView milliSeconds =
                 [ "Lucida Sans Unicode", "sans-serif" ]
             ]
         ]
-        [ text (minute ++ ":" ++ second) ]
+        [ text (minute ++ ":" ++ seconds) ]
 
 
 taskListView : List Task -> Html Msg
