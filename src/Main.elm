@@ -302,6 +302,30 @@ taskView index task =
         [ text task.name ]
 
 
+debugStateParams : Timer -> Html Msg
+debugStateParams timer =
+    div []
+        [ div
+            [ css
+                [ fontFamilies [ "Courier New", "monospace" ]
+                ]
+            ]
+            [ text ("completedPomodoros" ++ " " ++ String.fromInt timer.completedPomodoros) ]
+        , div
+            [ css
+                [ fontFamilies [ "Courier New", "monospace" ]
+                ]
+            ]
+            [ text ("completedSets" ++ " " ++ String.fromInt timer.completedSets) ]
+        , div
+            [ css
+                [ fontFamilies [ "Courier New", "monospace" ]
+                ]
+            ]
+            [ text ("state" ++ " " ++ stateToString timer.state) ]
+        ]
+
+
 view : Model -> Browser.Document Msg
 view model =
     let
@@ -322,6 +346,8 @@ view model =
                             ]
                         ]
                         [ text "Pomodoro Timer" ]
+
+                    -- , debugStateParams model.timer
                     , timerView model.timer.milliSecLeft
                     , div
                         [ css
