@@ -5242,7 +5242,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$document = _Browser_document;
 var $author$project$Main$Work = {$: 'Work'};
-var $author$project$Main$defaultPomodoroState = {completedPomodoros: 0, completedSets: 0, milliSecLeft: 1500000, state: $author$project$Main$Work};
+var $author$project$Main$defaultPomodoroState = {completedPomodoros: 0, completedSets: 0, milliSecLeft: 2000, paused: false, state: $author$project$Main$Work};
 var $author$project$Main$defaultTasks = _List_fromArray(
 	[
 		{completed: true, id: 1, name: 'Drink water'},
@@ -5678,6 +5678,7 @@ var $elm$time$Time$every = F2(
 var $author$project$Main$subscriptions = function (_v0) {
 	return A2($elm$time$Time$every, 1000, $author$project$Main$Tick);
 };
+var $author$project$Main$ChangePomoState = {$: 'ChangePomoState'};
 var $author$project$Main$addTask = F2(
 	function (text, tasks) {
 		return _Utils_ap(
@@ -5691,6 +5692,7 @@ var $author$project$Main$addTask = F2(
 				}
 				]));
 	});
+var $elm$core$Basics$not = _Basics_not;
 var $elm$core$List$drop = F2(
 	function (n, list) {
 		drop:
@@ -5844,12 +5846,28 @@ var $author$project$Main$removeTask = F2(
 			A2($elm$core$List$take, index, list),
 			A2($elm$core$List$drop, index + 1, list));
 	});
+var $author$project$Main$Break = {$: 'Break'};
+var $author$project$Main$setBreakState = function (timer) {
+	return _Utils_update(
+		timer,
+		{completedPomodoros: timer.completedPomodoros, completedSets: timer.completedSets, milliSecLeft: 2000, paused: false, state: $author$project$Main$Break});
+};
+var $author$project$Main$LongBreak = {$: 'LongBreak'};
+var $author$project$Main$setLongBreakState = function (timer) {
+	return _Utils_update(
+		timer,
+		{completedPomodoros: timer.completedPomodoros, completedSets: timer.completedSets + 1, milliSecLeft: 5000, paused: false, state: $author$project$Main$LongBreak});
+};
+var $author$project$Main$setWorkState = function (timer) {
+	return _Utils_update(
+		timer,
+		{completedPomodoros: timer.completedPomodoros + 1, completedSets: timer.completedSets, milliSecLeft: 3000, paused: false, state: $author$project$Main$Work});
+};
 var $author$project$Main$tick = function (timer) {
 	return _Utils_update(
 		timer,
 		{milliSecLeft: timer.milliSecLeft - 1000});
 };
-var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$toggleAtIndex = F2(
 	function (indexToToggle, list) {
 		return A2(
@@ -5864,49 +5882,108 @@ var $author$project$Main$toggleAtIndex = F2(
 	});
 var $author$project$Main$update = F2(
 	function (message, model) {
-		switch (message.$) {
-			case 'Tick':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							timer: $author$project$Main$tick(model.timer)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'AddTask':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							inputText: '',
-							tasks: A2($author$project$Main$addTask, model.inputText, model.tasks)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'RemoveTask':
-				var index = message.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							tasks: A2($author$project$Main$removeTask, index, model.tasks)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'ToggleTask':
-				var index = message.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							tasks: A2($author$project$Main$toggleAtIndex, index, model.tasks)
-						}),
-					$elm$core$Platform$Cmd$none);
-			default:
-				var input = message.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{inputText: input}),
-					$elm$core$Platform$Cmd$none);
+		update:
+		while (true) {
+			switch (message.$) {
+				case 'Tick':
+					if (model.timer.paused) {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					} else {
+						if (model.timer.milliSecLeft < 1000) {
+							var $temp$message = $author$project$Main$ChangePomoState,
+								$temp$model = model;
+							message = $temp$message;
+							model = $temp$model;
+							continue update;
+						} else {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										timer: $author$project$Main$tick(model.timer)
+									}),
+								$elm$core$Platform$Cmd$none);
+						}
+					}
+				case 'ChangePomoState':
+					var _v1 = model.timer.state;
+					switch (_v1.$) {
+						case 'Work':
+							return (model.timer.completedPomodoros === 4) ? _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										timer: $author$project$Main$setLongBreakState(model.timer)
+									}),
+								$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										timer: $author$project$Main$setBreakState(model.timer)
+									}),
+								$elm$core$Platform$Cmd$none);
+						case 'Break':
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										timer: $author$project$Main$setWorkState(model.timer)
+									}),
+								$elm$core$Platform$Cmd$none);
+						default:
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										timer: $author$project$Main$setWorkState(model.timer)
+									}),
+								$elm$core$Platform$Cmd$none);
+					}
+				case 'TogglePauseTimer':
+					var prevTimerState = model.timer;
+					var newTimerState = _Utils_update(
+						prevTimerState,
+						{paused: !prevTimerState.paused});
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{timer: newTimerState}),
+						$elm$core$Platform$Cmd$none);
+				case 'AddTask':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								inputText: '',
+								tasks: A2($author$project$Main$addTask, model.inputText, model.tasks)
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'RemoveTask':
+					var index = message.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								tasks: A2($author$project$Main$removeTask, index, model.tasks)
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'ToggleTask':
+					var index = message.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								tasks: A2($author$project$Main$toggleAtIndex, index, model.tasks)
+							}),
+						$elm$core$Platform$Cmd$none);
+				default:
+					var input = message.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{inputText: input}),
+						$elm$core$Platform$Cmd$none);
+			}
 		}
 	});
 var $author$project$Main$AddTask = {$: 'AddTask'};
@@ -8489,7 +8566,7 @@ var $author$project$Main$view = function (model) {
 									[
 										$rtfeldman$elm_css$Html$Styled$Attributes$value(model.inputText),
 										$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$ChangeInput),
-										$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('placeholder')
+										$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Add Task')
 									]),
 								_List_Nil),
 								A2(

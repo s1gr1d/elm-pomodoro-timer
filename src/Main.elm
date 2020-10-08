@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import Basics exposing (toFloat)
 import Browser
 import Css exposing (..)
 import Html.Styled exposing (Html, button, div, h1, input, li, section, text, ul)
@@ -37,6 +38,7 @@ type alias Timer =
     , completedPomodoros : Int
     , completedSets : Int
     , milliSecLeft : Int
+    , paused : Bool
     }
 
 
@@ -68,7 +70,8 @@ defaultPomodoroState =
     { state = Work
     , completedPomodoros = 0
     , completedSets = 0
-    , milliSecLeft = 1500000
+    , milliSecLeft = 2000
+    , paused = False
     }
 
 
@@ -83,6 +86,8 @@ init _ =
 
 type Msg
     = Tick Time.Posix
+    | ChangePomoState
+    | TogglePauseTimer
     | AddTask
     | RemoveTask Int
     | ToggleTask Int
@@ -93,7 +98,40 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         Tick _ ->
-            ( { model | timer = tick model.timer }, Cmd.none )
+            if model.timer.paused then
+                -- do nothing
+                ( model, Cmd.none )
+
+            else if model.timer.milliSecLeft < 1000 then
+                update ChangePomoState model
+
+            else
+                ( { model | timer = tick model.timer }, Cmd.none )
+
+        ChangePomoState ->
+            case model.timer.state of
+                Work ->
+                    if model.timer.completedPomodoros == 4 then
+                        ( { model | timer = setLongBreakState model.timer }, Cmd.none )
+
+                    else
+                        ( { model | timer = setBreakState model.timer }, Cmd.none )
+
+                Break ->
+                    ( { model | timer = setWorkState model.timer }, Cmd.none )
+
+                LongBreak ->
+                    ( { model | timer = setWorkState model.timer }, Cmd.none )
+
+        TogglePauseTimer ->
+            let
+                prevTimerState =
+                    model.timer
+
+                newTimerState =
+                    { prevTimerState | paused = not prevTimerState.paused }
+            in
+            ( { model | timer = newTimerState }, Cmd.none )
 
         AddTask ->
             ( { model
@@ -116,6 +154,39 @@ update message model =
 tick : Timer -> Timer
 tick timer =
     { timer | milliSecLeft = timer.milliSecLeft - 1000 }
+
+
+setWorkState : Timer -> Timer
+setWorkState timer =
+    { timer
+        | state = Work
+        , completedPomodoros = timer.completedPomodoros + 1
+        , completedSets = timer.completedSets
+        , milliSecLeft = 3000
+        , paused = False
+    }
+
+
+setBreakState : Timer -> Timer
+setBreakState timer =
+    { timer
+        | state = Break
+        , completedPomodoros = timer.completedPomodoros
+        , completedSets = timer.completedSets
+        , milliSecLeft = 2000
+        , paused = False
+    }
+
+
+setLongBreakState : Timer -> Timer
+setLongBreakState timer =
+    { timer
+        | state = LongBreak
+        , completedPomodoros = timer.completedPomodoros
+        , completedSets = timer.completedSets + 1
+        , milliSecLeft = 5000
+        , paused = False
+    }
 
 
 
@@ -156,6 +227,19 @@ subscriptions _ =
 
 
 -- VIEW
+
+
+stateToString : PomodoroState -> String
+stateToString state =
+    case state of
+        Work ->
+            "work"
+
+        Break ->
+            "break"
+
+        LongBreak ->
+            "longBreak"
 
 
 timerView : Int -> Html Msg
