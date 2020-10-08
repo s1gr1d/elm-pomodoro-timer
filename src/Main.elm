@@ -3,7 +3,7 @@ module Main exposing (main)
 import Basics exposing (toFloat)
 import Browser
 import Css exposing (..)
-import Html.Styled exposing (Html, button, div, h1, input, li, section, text, ul)
+import Html.Styled exposing (Html, button, div, h1, input, li, section, span, text, ul)
 import Html.Styled.Attributes exposing (css, name, placeholder, value)
 import Html.Styled.Events exposing (onClick, onInput)
 import Time
@@ -163,7 +163,7 @@ setWorkState timer =
         , completedPomodoros = timer.completedPomodoros + 1
         , completedSets = timer.completedSets
         , milliSecLeft = 3000
-        , paused = False
+        , paused = True
     }
 
 
@@ -174,7 +174,7 @@ setBreakState timer =
         , completedPomodoros = timer.completedPomodoros
         , completedSets = timer.completedSets
         , milliSecLeft = 2000
-        , paused = False
+        , paused = True
     }
 
 
@@ -185,7 +185,7 @@ setLongBreakState timer =
         , completedPomodoros = timer.completedPomodoros
         , completedSets = timer.completedSets + 1
         , milliSecLeft = 5000
-        , paused = False
+        , paused = True
     }
 
 
@@ -278,6 +278,28 @@ timerView milliSeconds =
         [ text (minute ++ ":" ++ seconds) ]
 
 
+controlsView : Timer -> Html Msg
+controlsView timer =
+    button
+        [ css
+            [ displayFlex
+            , justifyContent center
+            , alignItems center
+            , margin (px 10)
+            , padding2 (px 5) (px 10)
+            ]
+        , onClick TogglePauseTimer
+        ]
+        [ text
+            (if timer.paused then
+                "Play"
+
+             else
+                "Pause"
+            )
+        ]
+
+
 taskListView : List Task -> Html Msg
 taskListView list =
     ul
@@ -349,6 +371,8 @@ view model =
 
                     -- , debugStateParams model.timer
                     , timerView model.timer.milliSecLeft
+                    , span [] [ text (stateToString model.timer.state) ]
+                    , controlsView model.timer
                     , div
                         [ css
                             [ displayFlex
