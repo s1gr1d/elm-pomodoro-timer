@@ -356,7 +356,7 @@ view model =
                             , alignItems center
                             ]
                         ]
-                        [ input [ value model.inputText, onInput ChangeInput, placeholder "placeholder" ] []
+                        [ input [ value model.inputText, onInput ChangeInput, placeholder "Add Task" ] []
                         , button
                             [ css
                                 [ displayFlex
