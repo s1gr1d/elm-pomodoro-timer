@@ -72,8 +72,8 @@ defaultPomodoroState =
     { state = Work
     , completedPomodoros = 0
     , completedSets = 0
-    , milliSecLeft = 2000
-    , paused = False
+    , milliSecLeft = 1500000
+    , paused = True
     }
 
 
@@ -179,7 +179,7 @@ setWorkState timer =
         | state = Work
         , completedPomodoros = updatedCompletedPomodoros
         , completedSets = timer.completedSets
-        , milliSecLeft = 1000
+        , milliSecLeft = 1500000
         , paused = True
     }
 
@@ -190,7 +190,7 @@ setBreakState timer =
         | state = Break
         , completedPomodoros = timer.completedPomodoros + 1
         , completedSets = timer.completedSets
-        , milliSecLeft = 1000
+        , milliSecLeft = 300000
         , paused = True
     }
 
@@ -201,7 +201,7 @@ setLongBreakState timer =
         | state = LongBreak
         , completedPomodoros = timer.completedPomodoros + 1
         , completedSets = timer.completedSets + 1
-        , milliSecLeft = 1000
+        , milliSecLeft = 900000
         , paused = True
     }
 
@@ -302,10 +302,6 @@ checkmarkCircles timer =
         (List.map (\element -> element) allCircles)
 
 
-
--- todo: show full circles depending on data in timer state
-
-
 timerView : Int -> Html Msg
 timerView milliSeconds =
     let
@@ -336,7 +332,9 @@ timerView milliSeconds =
             [ displayFlex
             , justifyContent center
             , fontFamilies
-                [ "Lucida Sans Unicode", "sans-serif" ]
+                [ "Inconsolata", "monospace" ]
+            , fontWeight bold
+            , fontSize (rem 3)
             ]
         ]
         [ text (minute ++ ":" ++ seconds) ]
@@ -448,7 +446,8 @@ view model =
 
                     -- , debugStateParams model.timer
                     , timerView model.timer.milliSecLeft
-                    , span [] [ text (stateToString model.timer.state) ]
+
+                    -- , span [] [ text (stateToString model.timer.state) ]
                     , controlsView model.timer
                     , checkmarkCircles model.timer
                     , div

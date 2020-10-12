@@ -5242,7 +5242,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$document = _Browser_document;
 var $author$project$Main$Work = {$: 'Work'};
-var $author$project$Main$defaultPomodoroState = {completedPomodoros: 0, completedSets: 0, milliSecLeft: 2000, paused: false, state: $author$project$Main$Work};
+var $author$project$Main$defaultPomodoroState = {completedPomodoros: 0, completedSets: 0, milliSecLeft: 1500000, paused: true, state: $author$project$Main$Work};
 var $author$project$Main$defaultTasks = _List_fromArray(
 	[
 		{completed: true, id: 1, name: 'Drink water'},
@@ -5850,19 +5850,19 @@ var $author$project$Main$Break = {$: 'Break'};
 var $author$project$Main$setBreakState = function (timer) {
 	return _Utils_update(
 		timer,
-		{completedPomodoros: timer.completedPomodoros + 1, completedSets: timer.completedSets, milliSecLeft: 1000, paused: true, state: $author$project$Main$Break});
+		{completedPomodoros: timer.completedPomodoros + 1, completedSets: timer.completedSets, milliSecLeft: 300000, paused: true, state: $author$project$Main$Break});
 };
 var $author$project$Main$LongBreak = {$: 'LongBreak'};
 var $author$project$Main$setLongBreakState = function (timer) {
 	return _Utils_update(
 		timer,
-		{completedPomodoros: timer.completedPomodoros + 1, completedSets: timer.completedSets + 1, milliSecLeft: 1000, paused: true, state: $author$project$Main$LongBreak});
+		{completedPomodoros: timer.completedPomodoros + 1, completedSets: timer.completedSets + 1, milliSecLeft: 900000, paused: true, state: $author$project$Main$LongBreak});
 };
 var $author$project$Main$setWorkState = function (timer) {
 	var updatedCompletedPomodoros = (timer.completedPomodoros === 4) ? 0 : timer.completedPomodoros;
 	return _Utils_update(
 		timer,
-		{completedPomodoros: updatedCompletedPomodoros, completedSets: timer.completedSets, milliSecLeft: 1000, paused: true, state: $author$project$Main$Work});
+		{completedPomodoros: updatedCompletedPomodoros, completedSets: timer.completedSets, milliSecLeft: 1500000, paused: true, state: $author$project$Main$Work});
 };
 var $author$project$Main$tick = function (timer) {
 	return _Utils_update(
@@ -8619,17 +8619,6 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty = F2(
 	});
 var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
 var $rtfeldman$elm_css$Html$Styled$section = $rtfeldman$elm_css$Html$Styled$node('section');
-var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
-var $author$project$Main$stateToString = function (state) {
-	switch (state.$) {
-		case 'Work':
-			return 'work';
-		case 'Break':
-			return 'break';
-		default:
-			return 'longBreak';
-	}
-};
 var $rtfeldman$elm_css$Css$row = {flexDirection: $rtfeldman$elm_css$Css$Structure$Compatible, flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'row'};
 var $rtfeldman$elm_css$Css$column = _Utils_update(
 	$rtfeldman$elm_css$Css$row,
@@ -8687,6 +8676,14 @@ var $author$project$Main$taskListView = function (list) {
 				}),
 			list));
 };
+var $rtfeldman$elm_css$Css$bold = {fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'bold'};
+var $rtfeldman$elm_css$Css$fontSize = $rtfeldman$elm_css$Css$prop1('font-size');
+var $rtfeldman$elm_css$Css$fontWeight = function (_v0) {
+	var value = _v0.value;
+	return A2($rtfeldman$elm_css$Css$property, 'font-weight', value);
+};
+var $rtfeldman$elm_css$Css$RemUnits = {$: 'RemUnits'};
+var $rtfeldman$elm_css$Css$rem = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$RemUnits, 'rem');
 var $elm$time$Time$flooredDiv = F2(
 	function (numerator, denominator) {
 		return $elm$core$Basics$floor(numerator / denominator);
@@ -8775,7 +8772,10 @@ var $author$project$Main$timerView = function (milliSeconds) {
 						$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
 						$rtfeldman$elm_css$Css$fontFamilies(
 						_List_fromArray(
-							['Lucida Sans Unicode', 'sans-serif']))
+							['Inconsolata', 'monospace'])),
+						$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$rem(3))
 					]))
 			]),
 		_List_fromArray(
@@ -9309,14 +9309,6 @@ var $author$project$Main$view = function (model) {
 								$rtfeldman$elm_css$Html$Styled$text('Pomodoro Timer')
 							])),
 						$author$project$Main$timerView(model.timer.milliSecLeft),
-						A2(
-						$rtfeldman$elm_css$Html$Styled$span,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Html$Styled$text(
-								$author$project$Main$stateToString(model.timer.state))
-							])),
 						$author$project$Main$controlsView(model.timer),
 						$author$project$Main$checkmarkCircles(model.timer),
 						A2(
