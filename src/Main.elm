@@ -3,6 +3,8 @@ module Main exposing (main)
 import Basics exposing (toFloat)
 import Browser
 import Css exposing (..)
+import FeatherIcons
+import Html.Events
 import Html.Styled exposing (Html, button, div, h1, input, li, section, span, text, ul)
 import Html.Styled.Attributes exposing (css, name, placeholder, value)
 import Html.Styled.Events exposing (onClick, onInput)
@@ -286,17 +288,22 @@ controlsView timer =
             , justifyContent center
             , alignItems center
             , margin (px 10)
-            , padding2 (px 5) (px 10)
+            , padding (px 10)
+            , backgroundColor (hex "d93434")
+            , color (hex "fff")
+            , borderRadius (px 60)
+            , borderStyle none
+            , pseudoClass "hover"
+                [ cursor pointer
+                ]
             ]
         , onClick TogglePauseTimer
         ]
-        [ text
-            (if timer.paused then
-                "Play"
+        [ if timer.paused then
+            Html.Styled.fromUnstyled (FeatherIcons.playCircle |> FeatherIcons.toHtml [])
 
-             else
-                "Pause"
-            )
+          else
+            Html.Styled.fromUnstyled (FeatherIcons.pauseCircle |> FeatherIcons.toHtml [])
         ]
 
 
