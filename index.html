@@ -5850,18 +5850,19 @@ var $author$project$Main$Break = {$: 'Break'};
 var $author$project$Main$setBreakState = function (timer) {
 	return _Utils_update(
 		timer,
-		{completedPomodoros: timer.completedPomodoros, completedSets: timer.completedSets, milliSecLeft: 2000, paused: true, state: $author$project$Main$Break});
+		{completedPomodoros: timer.completedPomodoros + 1, completedSets: timer.completedSets, milliSecLeft: 1000, paused: true, state: $author$project$Main$Break});
 };
 var $author$project$Main$LongBreak = {$: 'LongBreak'};
 var $author$project$Main$setLongBreakState = function (timer) {
 	return _Utils_update(
 		timer,
-		{completedPomodoros: timer.completedPomodoros, completedSets: timer.completedSets + 1, milliSecLeft: 5000, paused: true, state: $author$project$Main$LongBreak});
+		{completedPomodoros: timer.completedPomodoros + 1, completedSets: timer.completedSets + 1, milliSecLeft: 1000, paused: true, state: $author$project$Main$LongBreak});
 };
 var $author$project$Main$setWorkState = function (timer) {
+	var updatedCompletedPomodoros = (timer.completedPomodoros === 4) ? 0 : timer.completedPomodoros;
 	return _Utils_update(
 		timer,
-		{completedPomodoros: timer.completedPomodoros + 1, completedSets: timer.completedSets, milliSecLeft: 3000, paused: true, state: $author$project$Main$Work});
+		{completedPomodoros: updatedCompletedPomodoros, completedSets: timer.completedSets, milliSecLeft: 1000, paused: true, state: $author$project$Main$Work});
 };
 var $author$project$Main$tick = function (timer) {
 	return _Utils_update(
@@ -5909,7 +5910,11 @@ var $author$project$Main$update = F2(
 					var _v1 = model.timer.state;
 					switch (_v1.$) {
 						case 'Work':
-							return (model.timer.completedPomodoros === 4) ? _Utils_Tuple2(
+							var prevTimerState = model.timer;
+							var newTimerState = _Utils_update(
+								prevTimerState,
+								{completedPomodoros: prevTimerState.completedPomodoros + 1});
+							return (newTimerState.completedPomodoros === 4) ? _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{
@@ -6125,15 +6130,15 @@ var $rtfeldman$elm_css$Css$prop1 = F2(
 		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
 	});
 var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
-var $author$project$Main$TogglePauseTimer = {$: 'TogglePauseTimer'};
 var $rtfeldman$elm_css$Css$backgroundColor = function (c) {
 	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.value);
 };
+var $rtfeldman$elm_css$Css$borderColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'border-color', c.value);
+};
 var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
 var $rtfeldman$elm_css$Css$borderStyle = $rtfeldman$elm_css$Css$prop1('border-style');
-var $rtfeldman$elm_css$Css$color = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'color', c.value);
-};
+var $rtfeldman$elm_css$Css$borderWidth = $rtfeldman$elm_css$Css$prop1('border-width');
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
 		return {$: 'Attribute', a: a, b: b, c: c};
@@ -7754,13 +7759,10 @@ var $rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 	return A3($rtfeldman$elm_css$VirtualDom$Styled$Attribute, classProperty, styles, classname);
 };
 var $rtfeldman$elm_css$Html$Styled$Attributes$css = $rtfeldman$elm_css$Html$Styled$Internal$css;
-var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
 var $rtfeldman$elm_css$Css$displayFlex = A2($rtfeldman$elm_css$Css$property, 'display', 'flex');
-var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
-	return {$: 'Unstyled', a: a};
-};
-var $rtfeldman$elm_css$VirtualDom$Styled$unstyledNode = $rtfeldman$elm_css$VirtualDom$Styled$Unstyled;
-var $rtfeldman$elm_css$Html$Styled$fromUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$unstyledNode;
+var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
+var $rtfeldman$elm_css$Css$EmUnits = {$: 'EmUnits'};
+var $rtfeldman$elm_css$Css$em = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$EmUnits, 'em');
 var $rtfeldman$elm_css$Css$withPrecedingHash = function (str) {
 	return A2($elm$core$String$startsWith, '#', str) ? str : A2(
 		$elm$core$String$cons,
@@ -8150,6 +8152,125 @@ var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
 		'justify-content',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
+var $rtfeldman$elm_css$Css$prop2 = F3(
+	function (key, argA, argB) {
+		return A2(
+			$rtfeldman$elm_css$Css$property,
+			key,
+			A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					[argA.value, argB.value])));
+	});
+var $rtfeldman$elm_css$Css$margin2 = $rtfeldman$elm_css$Css$prop2('margin');
+var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
+var $rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
+var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
+var $author$project$Main$checkmarkCircles = function (timer) {
+	var fullCircle = A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$padding(
+						$rtfeldman$elm_css$Css$px(10)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('d93434')),
+						$rtfeldman$elm_css$Css$borderStyle($rtfeldman$elm_css$Css$solid),
+						$rtfeldman$elm_css$Css$borderColor(
+						$rtfeldman$elm_css$Css$hex('d93434')),
+						$rtfeldman$elm_css$Css$borderWidth(
+						$rtfeldman$elm_css$Css$px(2)),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(60)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$em(0),
+						$rtfeldman$elm_css$Css$em(0.3))
+					]))
+			]),
+		_List_Nil);
+	var emptyCircle = A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$padding(
+						$rtfeldman$elm_css$Css$px(10)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('FFCFCF')),
+						$rtfeldman$elm_css$Css$borderStyle($rtfeldman$elm_css$Css$solid),
+						$rtfeldman$elm_css$Css$borderColor(
+						$rtfeldman$elm_css$Css$hex('d93434')),
+						$rtfeldman$elm_css$Css$borderWidth(
+						$rtfeldman$elm_css$Css$px(2)),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(60)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$em(0),
+						$rtfeldman$elm_css$Css$em(0.3))
+					]))
+			]),
+		_List_Nil);
+	var allCircles = _Utils_ap(
+		A2($elm$core$List$repeat, timer.completedPomodoros, fullCircle),
+		A2($elm$core$List$repeat, 4 - timer.completedPomodoros, emptyCircle));
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$displayFlex,
+						$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
+					]))
+			]),
+		A2(
+			$elm$core$List$map,
+			function (element) {
+				return element;
+			},
+			allCircles));
+};
+var $author$project$Main$TogglePauseTimer = {$: 'TogglePauseTimer'};
+var $rtfeldman$elm_css$Css$color = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'color', c.value);
+};
+var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
+var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
+	return {$: 'Unstyled', a: a};
+};
+var $rtfeldman$elm_css$VirtualDom$Styled$unstyledNode = $rtfeldman$elm_css$VirtualDom$Styled$Unstyled;
+var $rtfeldman$elm_css$Html$Styled$fromUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$unstyledNode;
 var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
 var $rtfeldman$elm_css$Css$none = {backgroundImage: $rtfeldman$elm_css$Css$Structure$Compatible, blockAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, display: $rtfeldman$elm_css$Css$Structure$Compatible, hoverCapability: $rtfeldman$elm_css$Css$Structure$Compatible, inlineAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, keyframes: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleType: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleTypeOrPositionOrImage: $rtfeldman$elm_css$Css$Structure$Compatible, none: $rtfeldman$elm_css$Css$Structure$Compatible, outline: $rtfeldman$elm_css$Css$Structure$Compatible, pointerDevice: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, resize: $rtfeldman$elm_css$Css$Structure$Compatible, scriptingSupport: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, textTransform: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, transform: $rtfeldman$elm_css$Css$Structure$Compatible, updateFrequency: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'none'};
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -8177,7 +8298,6 @@ var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
 var $elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
@@ -8331,8 +8451,6 @@ var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
 	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
 		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
 };
-var $rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
-var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
 var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
 var $elm$svg$Svg$map = $elm$virtual_dom$VirtualDom$map;
 var $1602$elm_feather$FeatherIcons$toHtml = F2(
@@ -8378,7 +8496,7 @@ var $1602$elm_feather$FeatherIcons$toHtml = F2(
 	});
 var $author$project$Main$controlsView = function (timer) {
 	return A2(
-		$rtfeldman$elm_css$Html$Styled$button,
+		$rtfeldman$elm_css$Html$Styled$div,
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
@@ -8386,36 +8504,50 @@ var $author$project$Main$controlsView = function (timer) {
 					[
 						$rtfeldman$elm_css$Css$displayFlex,
 						$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
-						$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-						$rtfeldman$elm_css$Css$margin(
-						$rtfeldman$elm_css$Css$px(10)),
-						$rtfeldman$elm_css$Css$padding(
-						$rtfeldman$elm_css$Css$px(10)),
-						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('d93434')),
-						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('fff')),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$px(60)),
-						$rtfeldman$elm_css$Css$borderStyle($rtfeldman$elm_css$Css$none),
-						A2(
-						$rtfeldman$elm_css$Css$pseudoClass,
-						'hover',
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer)
-							]))
-					])),
-				$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$TogglePauseTimer)
+						$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center)
+					]))
 			]),
 		_List_fromArray(
 			[
-				timer.paused ? $rtfeldman$elm_css$Html$Styled$fromUnstyled(
-				A2($1602$elm_feather$FeatherIcons$toHtml, _List_Nil, $1602$elm_feather$FeatherIcons$playCircle)) : $rtfeldman$elm_css$Html$Styled$fromUnstyled(
-				A2($1602$elm_feather$FeatherIcons$toHtml, _List_Nil, $1602$elm_feather$FeatherIcons$pauseCircle))
+				A2(
+				$rtfeldman$elm_css$Html$Styled$button,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$displayFlex,
+								$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
+								$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+								$rtfeldman$elm_css$Css$margin(
+								$rtfeldman$elm_css$Css$px(10)),
+								$rtfeldman$elm_css$Css$padding(
+								$rtfeldman$elm_css$Css$px(10)),
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('d93434')),
+								$rtfeldman$elm_css$Css$color(
+								$rtfeldman$elm_css$Css$hex('fff')),
+								$rtfeldman$elm_css$Css$borderRadius(
+								$rtfeldman$elm_css$Css$px(60)),
+								$rtfeldman$elm_css$Css$borderStyle($rtfeldman$elm_css$Css$none),
+								A2(
+								$rtfeldman$elm_css$Css$pseudoClass,
+								'hover',
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer)
+									]))
+							])),
+						$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$TogglePauseTimer)
+					]),
+				_List_fromArray(
+					[
+						timer.paused ? $rtfeldman$elm_css$Html$Styled$fromUnstyled(
+						A2($1602$elm_feather$FeatherIcons$toHtml, _List_Nil, $1602$elm_feather$FeatherIcons$playCircle)) : $rtfeldman$elm_css$Html$Styled$fromUnstyled(
+						A2($1602$elm_feather$FeatherIcons$toHtml, _List_Nil, $1602$elm_feather$FeatherIcons$pauseCircle))
+					]))
 			]));
 };
-var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
 var $rtfeldman$elm_css$Css$stringsToValue = function (list) {
 	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
 		value: A2(
@@ -8469,17 +8601,6 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
 };
-var $rtfeldman$elm_css$Css$prop2 = F3(
-	function (key, argA, argB) {
-		return A2(
-			$rtfeldman$elm_css$Css$property,
-			key,
-			A2(
-				$elm$core$String$join,
-				' ',
-				_List_fromArray(
-					[argA.value, argB.value])));
-	});
 var $rtfeldman$elm_css$Css$padding2 = $rtfeldman$elm_css$Css$prop2('padding');
 var $rtfeldman$elm_css$VirtualDom$Styled$property = F2(
 	function (key, value) {
@@ -9197,6 +9318,7 @@ var $author$project$Main$view = function (model) {
 								$author$project$Main$stateToString(model.timer.state))
 							])),
 						$author$project$Main$controlsView(model.timer),
+						$author$project$Main$checkmarkCircles(model.timer),
 						A2(
 						$rtfeldman$elm_css$Html$Styled$div,
 						_List_fromArray(

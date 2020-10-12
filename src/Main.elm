@@ -113,7 +113,14 @@ update message model =
         ChangePomoState ->
             case model.timer.state of
                 Work ->
-                    if model.timer.completedPomodoros == 4 then
+                    let
+                        prevTimerState =
+                            model.timer
+
+                        newTimerState =
+                            { prevTimerState | completedPomodoros = prevTimerState.completedPomodoros + 1 }
+                    in
+                    if newTimerState.completedPomodoros == 4 then
                         ( { model | timer = setLongBreakState model.timer }, Cmd.none )
 
                     else
@@ -160,11 +167,19 @@ tick timer =
 
 setWorkState : Timer -> Timer
 setWorkState timer =
+    let
+        updatedCompletedPomodoros =
+            if timer.completedPomodoros == 4 then
+                0
+
+            else
+                timer.completedPomodoros
+    in
     { timer
         | state = Work
-        , completedPomodoros = timer.completedPomodoros + 1
+        , completedPomodoros = updatedCompletedPomodoros
         , completedSets = timer.completedSets
-        , milliSecLeft = 3000
+        , milliSecLeft = 1000
         , paused = True
     }
 
@@ -173,9 +188,9 @@ setBreakState : Timer -> Timer
 setBreakState timer =
     { timer
         | state = Break
-        , completedPomodoros = timer.completedPomodoros
+        , completedPomodoros = timer.completedPomodoros + 1
         , completedSets = timer.completedSets
-        , milliSecLeft = 2000
+        , milliSecLeft = 1000
         , paused = True
     }
 
@@ -184,9 +199,9 @@ setLongBreakState : Timer -> Timer
 setLongBreakState timer =
     { timer
         | state = LongBreak
-        , completedPomodoros = timer.completedPomodoros
+        , completedPomodoros = timer.completedPomodoros + 1
         , completedSets = timer.completedSets + 1
-        , milliSecLeft = 5000
+        , milliSecLeft = 1000
         , paused = True
     }
 
@@ -274,6 +289,9 @@ checkmarkCircles timer =
                     ]
                 ]
                 []
+
+        allCircles =
+            List.repeat timer.completedPomodoros fullCircle ++ List.repeat (4 - timer.completedPomodoros) emptyCircle
     in
     div
         [ css
@@ -281,7 +299,7 @@ checkmarkCircles timer =
             , justifyContent center
             ]
         ]
-        [ fullCircle, emptyCircle, emptyCircle, emptyCircle ]
+        (List.map (\element -> element) allCircles)
 
 
 
