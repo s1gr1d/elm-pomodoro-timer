@@ -244,6 +244,50 @@ stateToString state =
             "longBreak"
 
 
+checkmarkCircles : Timer -> Html Msg
+checkmarkCircles timer =
+    let
+        emptyCircle =
+            div
+                [ css
+                    [ padding (px 10)
+                    , backgroundColor (hex "FFCFCF")
+                    , borderStyle solid
+                    , borderColor (hex "d93434")
+                    , borderWidth (px 2)
+                    , borderRadius (px 60)
+                    , margin2 (em 0) (em 0.3)
+                    ]
+                ]
+                []
+
+        fullCircle =
+            div
+                [ css
+                    [ padding (px 10)
+                    , backgroundColor (hex "d93434")
+                    , borderStyle solid
+                    , borderColor (hex "d93434")
+                    , borderWidth (px 2)
+                    , borderRadius (px 60)
+                    , margin2 (em 0) (em 0.3)
+                    ]
+                ]
+                []
+    in
+    div
+        [ css
+            [ displayFlex
+            , justifyContent center
+            ]
+        ]
+        [ fullCircle, emptyCircle, emptyCircle, emptyCircle ]
+
+
+
+-- todo: show full circles depending on data in timer state
+
+
 timerView : Int -> Html Msg
 timerView milliSeconds =
     let
@@ -380,6 +424,7 @@ view model =
                     , timerView model.timer.milliSecLeft
                     , span [] [ text (stateToString model.timer.state) ]
                     , controlsView model.timer
+                    , checkmarkCircles model.timer
                     , div
                         [ css
                             [ displayFlex
