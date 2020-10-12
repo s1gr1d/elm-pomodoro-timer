@@ -326,28 +326,36 @@ timerView milliSeconds =
 
 controlsView : Timer -> Html Msg
 controlsView timer =
-    button
+    div
         [ css
             [ displayFlex
             , justifyContent center
             , alignItems center
-            , margin (px 10)
-            , padding (px 10)
-            , backgroundColor (hex "d93434")
-            , color (hex "fff")
-            , borderRadius (px 60)
-            , borderStyle none
-            , pseudoClass "hover"
-                [ cursor pointer
-                ]
             ]
-        , onClick TogglePauseTimer
         ]
-        [ if timer.paused then
-            Html.Styled.fromUnstyled (FeatherIcons.playCircle |> FeatherIcons.toHtml [])
+        [ button
+            [ css
+                [ displayFlex
+                , justifyContent center
+                , alignItems center
+                , margin (px 10)
+                , padding (px 10)
+                , backgroundColor (hex "d93434")
+                , color (hex "fff")
+                , borderRadius (px 60)
+                , borderStyle none
+                , pseudoClass "hover"
+                    [ cursor pointer
+                    ]
+                ]
+            , onClick TogglePauseTimer
+            ]
+            [ if timer.paused then
+                Html.Styled.fromUnstyled (FeatherIcons.playCircle |> FeatherIcons.toHtml [])
 
-          else
-            Html.Styled.fromUnstyled (FeatherIcons.pauseCircle |> FeatherIcons.toHtml [])
+              else
+                Html.Styled.fromUnstyled (FeatherIcons.pauseCircle |> FeatherIcons.toHtml [])
+            ]
         ]
 
 
